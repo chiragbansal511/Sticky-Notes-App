@@ -30,10 +30,6 @@ class _FilereadState extends State<Fileread> {
    void initState() {
     super.initState();
 
-    // Start listening to changes.
-    name.addListener(() {finalname = name.text;});
-    data.addListener(() {finaldata = data.text;});
-
     readCounter().then((value) {
       setState(() {
         allfilenames = value ;
@@ -99,7 +95,7 @@ class _FilereadState extends State<Fileread> {
             });
            }
         },
-         icon: Icon(modeicon))],
+         icon: Icon(modeicon)),],
 
          backgroundColor: Colors.blue,
          elevation: 10,
@@ -121,7 +117,7 @@ class _FilereadState extends State<Fileread> {
             },
 
             decoration: const  InputDecoration(
-             icon: Icon(Icons.file_copy_rounded),
+             icon: Icon(Icons.drive_file_rename_outline_rounded),
              hintText: "Heading",
               hoverColor: Color(0xFFFF9000),
                border: OutlineInputBorder(),
@@ -143,11 +139,14 @@ class _FilereadState extends State<Fileread> {
           ],
         )),
 
-       floatingActionButton: FloatingActionButton(onPressed: () 
-       {
+       floatingActionButton: FloatingActionButton(onPressed:  () 
+      async {
+        finalname = name.text ;
+        finaldata = data.text ;
+
         Navigator.pushNamed(context, '/');
+       await savedata(finaldata);
         allfilenames = allfilenames + finalname + ' ';
-        savedata(finaldata);
         finalname = "allfilenames" ;
         savedata(allfilenames);
         } ,

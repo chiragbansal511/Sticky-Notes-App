@@ -1,23 +1,26 @@
+import "package:flutter/material.dart";
 import 'dart:async';
 import 'dart:io';
-import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:testapp/screens/showfile.dart';
 
-class Home extends StatefulWidget {
-  const Home({super.key});
+class Showfile extends StatefulWidget {
+   Showfile({ Key? key  , required this.filename});
+  
+  String filename = "";
   @override
-  _HomeState createState() => _HomeState();
+  _ShowfileState createState() => _ShowfileState(filename: this.filename);
 }
 
-class _HomeState extends State<Home> {
-  
-  
+class _ShowfileState extends State<Showfile> {
+
   ThemeData mode = ThemeData.dark();
   IconData modeicon = Icons.light_mode;
-  List<String> data = [];
+  String filename ;
+  String data = '';
+  _ShowfileState({required this.filename});
 
-  Future<String> get _localPath async {
+
+ Future<String> get _localPath async {
     final directory = await getApplicationDocumentsDirectory();
 
     return directory.path;
@@ -26,7 +29,7 @@ class _HomeState extends State<Home> {
    
   Future<File> get _localFile async {
     final path = await _localPath;
-    return File('$path/allfilenames.txt');
+    return File('$path/$filename.txt');
   }
 
   Future<String> readCounter() async {
@@ -42,25 +45,24 @@ class _HomeState extends State<Home> {
       return "";
     }
   }
-
-
+  
   void initState() {
     super.initState();
     readCounter().then((value) {
       setState(() {
-        data = value.split(' ');
+        data = value;
       });
     });
   }
-   
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Center(
+          title:  Center(
             child: Text(
-              "Home",
+              filename,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
               ),
@@ -87,23 +89,12 @@ class _HomeState extends State<Home> {
           elevation: 10,
         ),
          
-       body : ListView(
-        scrollDirection: Axis.vertical,
-        children: data.map((value) {
-          return Container(
-           child: ElevatedButton.icon(onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => Showfile(filename: value,),
-                ),
-              );
-            }, icon: Icon(Icons.drive_file_move_rounded , color: Colors.lightBlueAccent, size: 45,), label: Text(value ,textAlign: TextAlign.left, style: TextStyle(fontSize: 25 ,),), style: ButtonStyle(elevation: MaterialStatePropertyAll(1) , alignment: Alignment.topLeft ,),),
-          ) ;
-        }).toList(),
-       ),
-        floatingActionButton: FloatingActionButton(onPressed: () {Navigator.pushNamed(context, '/fileread');} , child: Icon(Icons.add , color: Colors.white,) , backgroundColor: Colors.lightBlue,),
-        ),
+       body : Container(
+          child: Text(data , style: TextStyle(fontSize: 25 , fontWeight: FontWeight.normal , ),),
+       ) ,
+      
+      floatingActionButton: FloatingActionButton(onPressed: () {Navigator.pop(context);} , child: Icon(Icons.home_filled , color: Colors.white,) , backgroundColor: Colors.lightBlue,),
+     ),
       theme: mode,
       
     );
