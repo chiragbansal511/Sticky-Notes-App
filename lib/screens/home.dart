@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -15,7 +16,7 @@ class _HomeState extends State<Home> {
   
   ThemeData mode = ThemeData.dark();
   IconData modeicon = Icons.light_mode;
-  String data = "";
+  List<String> data = [];
 
   Future<String> get _localPath async {
     final directory = await getApplicationDocumentsDirectory();
@@ -48,7 +49,7 @@ class _HomeState extends State<Home> {
     super.initState();
     readCounter().then((value) {
       setState(() {
-        data = value;
+        data = value.split(' ');
       });
     });
   }
@@ -87,7 +88,14 @@ class _HomeState extends State<Home> {
           elevation: 10,
         ),
          
-       body: Text(data),
+       body : ListView(
+        scrollDirection: Axis.vertical,
+        children: data.map((value) {
+          return Container(
+           child: ElevatedButton.icon(onPressed: () {}, icon: Icon(Icons.drive_file_move_rounded , color: Colors.lightBlueAccent, size: 45,), label: Text(value ,textAlign: TextAlign.left, style: TextStyle(fontSize: 25 ,),), style: ButtonStyle(elevation: MaterialStatePropertyAll(1) , alignment: Alignment.topLeft ,),),
+          ) ;
+        }).toList(),
+       ),
         floatingActionButton: FloatingActionButton(onPressed: () {Navigator.pushNamed(context, '/fileread');} , child: Icon(Icons.add , color: Colors.white,) , backgroundColor: Colors.lightBlue,),
         ),
       theme: mode,
