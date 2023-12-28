@@ -6,7 +6,8 @@ import 'package:path_provider/path_provider.dart';
 
 
 class Fileread extends StatefulWidget {
-  const Fileread({super.key});
+  
+   Fileread({super.key});
 
   @override
   _FilereadState createState() => _FilereadState();
@@ -18,9 +19,10 @@ class _FilereadState extends State<Fileread> {
     IconData modeicon = Icons.light_mode;
   final name = TextEditingController();
   final data = TextEditingController();
-   String finalname = '' ;
+   String finalname = '';
    String finaldata = '';
-   
+   String allfilenames = "";
+
   @override
 
 
@@ -31,7 +33,14 @@ class _FilereadState extends State<Fileread> {
     // Start listening to changes.
     name.addListener(() {finalname = name.text;});
     data.addListener(() {finaldata = data.text;});
+
+    readCounter().then((value) {
+      setState(() {
+        allfilenames = value ;
+      });
+    });
   }
+
       Future<String> get _localPath async {
     final directory = await getApplicationDocumentsDirectory();
 
@@ -40,18 +49,33 @@ class _FilereadState extends State<Fileread> {
 
   Future<File> get _localFile async {
     final path = await _localPath;
-    return File('$path/counter.txt');
+    return File('$path/$finalname.txt');
   }   
   
-  Future<File> writeCounter(String counter) async {
+  Future<String> readCounter() async {
+    try {
+      final path = await _localPath;
+      final file = await File('$path/allfilenames.txt');
+
+      // Read the file
+      final contents = await file.readAsString();
+
+      return contents;
+    } catch (e) {
+      // If encountering an error, return 0
+      return "";
+    }
+  }
+
+  Future<File> writeCounter(String data) async {
     final file = await _localFile;
 
     // Write the file
-    return file.writeAsString('$counter');
+    return file.writeAsString('$data');
   }
 
-   Future<File> savedata(){
-    return writeCounter(finaldata);
+   Future<File> savedata(String data){
+    return writeCounter(data);
    }
    
   Widget build(BuildContext context) {
@@ -119,10 +143,16 @@ class _FilereadState extends State<Fileread> {
           ],
         )),
 
-       floatingActionButton: FloatingActionButton(onPressed: () {
+       floatingActionButton: FloatingActionButton(onPressed: () 
+       {
         Navigator.pushNamed(context, '/');
-        savedata();
-        } , child: Icon(Icons.save , color: Colors.white,) , backgroundColor: Colors.lightBlue,),
+        allfilenames = allfilenames + finalname + ' ';
+        savedata(finaldata);
+        finalname = "allfilenames" ;
+        savedata(allfilenames);
+        } ,
+        
+         child: Icon(Icons.save , color: Colors.white,) , backgroundColor: Colors.lightBlue,),
     ),
 
     theme: mode,
